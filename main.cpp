@@ -2,6 +2,7 @@
 #include <cstring>
 #include <sstream>
 #include <algorithm>
+#include <unordered_map>
 
 void removeDups(char* str) {
     const size_t N = strlen(str);
@@ -38,6 +39,39 @@ std::string binaryRepresentation(int number) {
 
     auto ret = binaryReprStream.str();
     return std::string(ret.rbegin(), ret.rend());
+}
+
+// структуру ListNode модифицровать нельзя
+struct ListNode {
+    ListNode *      prev;
+    ListNode *      next;
+    ListNode *      rand; // указатель на произвольный элемент данного списка, либо NULL
+    std::string     data;
+};
+
+class List {
+public:
+    void Serialize   (FILE * file);  // сохранение в файл (файл открыт с помощью fopen(path, "wb"))
+    void Deserialize (FILE * file);  // загрузка из файла (файл открыт с помощью fopen(path, "rb"))
+
+private:
+    ListNode *      head;
+    ListNode *      tail;
+    int       count;
+};
+
+void List::Serialize(FILE* file) {
+
+    std::unordered_map<ListNode*, size_t> nodeIndexes;
+    ListNode* currentNode = head;
+    while (currentNode) {
+        auto idxIter = nodeIndexes.find(currentNode);
+        if (idxIter == nodeIndexes.end()) {
+            nodeIndexes.
+        }
+
+        currentNode = currentNode->next;
+    }
 }
 
 int main() {
