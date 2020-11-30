@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cstring>
-#include <algorithm>
 #include <unordered_map>
 #include <netinet/in.h>
 #include <assert.h>
@@ -140,6 +139,11 @@ void List::pushBack(std::string_view data, ListNode* rand) {
 }
 
 ListNode* List::getNElement(size_t idx) {
+    const List* constThis = this;
+    return const_cast<ListNode*>(constThis->getNElement(idx));
+}
+
+const ListNode* List::getNElement(size_t idx) const {
     if (!m_head) {
         assert(m_tail && "TAIL MUST BE NULL DUE TO HEAD IS NULL");
         assert(m_count == 0);
@@ -150,13 +154,12 @@ ListNode* List::getNElement(size_t idx) {
         throw std::runtime_error("Bad idx to retrieve");
     }
 
-
-    const size_t lenghtFromTail = m_count - idx;
+    const size_t lengthFromTail = m_count - idx;
     const size_t lengthHalf = m_count / 2;
-    if (lenghtFromTail <= lengthHalf) {
+    if (lengthFromTail <= lengthHalf) {
         size_t i = 0;
         ListNode* current = m_tail;
-        idx = lenghtFromTail - 1;
+        idx = lengthFromTail - 1;
         while (i != idx) {
             ++i;
             current = current->prev;
@@ -173,10 +176,6 @@ ListNode* List::getNElement(size_t idx) {
     }
 
     return current;
-}
-
-const ListNode* List::getNElement(size_t idx) const {
-    return const_cast<List*>(this)->getNElement(idx);
 }
 
 void List::serialize(FILE* file) {
@@ -214,19 +213,19 @@ void List::deserialize(FILE* file) {
 
     size_t listSize{};
     read(file, listSize);
-    std::vector<RandNodePresence> randNodeIndexes;
-    randNodeIndexes.reserve(listSize);
+    std::vector<RandNodePresence> randNodeIndicies;
+    randNodeIndicies.reserve(listSize);
 
     for (size_t i = 0; i < listSize; ++i) {
-        randNodeIndexes.emplace_back(getRandNodePresence(file));
+        randNodeIndicies.emplace_back(getRandNodePresence(file));
     }
 
     ListNode* current = m_head;
-    for (auto& node : randNodeIndexes) {
+    for (auto& node : randNodeIndicies) {
         RandPresence randPresence = std::get<0>(node);
         size_t randIdx = std::get<1>(node);
         if (randPresence != NULL_VALUE && randIdx < listSize) {
-            current->rand = std::get<2>(randNodeIndexes[randIdx]);
+            current->rand = std::get<2>(randNodeIndicies[randIdx]);
         }
 
         current = current->next;
