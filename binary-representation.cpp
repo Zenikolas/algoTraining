@@ -9,8 +9,6 @@ std::string binaryRepresentation(int number) {
     unsigned int unumber = number;
 
     std::stringstream binaryReprStream;
-    // Can be changed to iterate from the highest byte, but I decided this version
-    // looks neater
     for (size_t i = 0; i < bitsInByte; ++i) {
         binaryReprStream << (unumber & 1);
         unumber >>= 1;
