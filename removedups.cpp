@@ -6,26 +6,42 @@ void removeDups(char* str) {
         return;
     }
 
-    size_t writeIdx = 0, currentIdx = 0, nextIdx = 1;
+    size_t resultIdx = 0, currentIdx = 0, nextIdx = 1;
     while (nextIdx < size) {
         if (str[currentIdx] == str[nextIdx]) {
             ++nextIdx;
         } else {
-            ++writeIdx;
-            str[writeIdx] = str[nextIdx];
+            ++resultIdx;
+            str[resultIdx] = str[nextIdx];
             currentIdx = nextIdx++;
         }
     }
 
-    if (writeIdx < size) {
-        ++writeIdx;
-        str[writeIdx] = '\0';
+    if (resultIdx < size) {
+        ++resultIdx;
+        str[resultIdx] = '\0';
     }
 }
 
 TEST(RemoveDupsTest, smokeTest) {
     char str[] = "aaabc   aa";
     char expectedStr[] = "abc a";
+    removeDups(str);
+
+    ASSERT_STREQ(str, expectedStr);
+}
+
+TEST(RemoveDupsTest, emptyTest) {
+    char str[] = "";
+    char expectedStr[] = "";
+    removeDups(str);
+
+    ASSERT_STREQ(str, expectedStr);
+}
+
+TEST(RemoveDupsTest, oneLetterTest) {
+    char str[] = "a";
+    char expectedStr[] = "a";
     removeDups(str);
 
     ASSERT_STREQ(str, expectedStr);
