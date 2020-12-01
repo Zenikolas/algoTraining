@@ -4,24 +4,38 @@
 #include <gtest/gtest.h>
 
 std::string binaryRepresentation(int number) {
+    if (number == 0) {
+        return "0";
+    }
     constexpr uint8_t BITS_IN_BYTE = 8;
-    constexpr size_t bitsInByte = sizeof(number) * BITS_IN_BYTE;
+    size_t bitsInByte = sizeof(number) * BITS_IN_BYTE;
     unsigned int unumber = number;
 
-    std::stringstream binaryReprStream;
+#if defined(__GNUC__) || defined(__GNUG__) || defined(__clang__)
+    if (number > 0) {
+        bitsInByte -= __builtin_clz(unumber);
+    }
+#elif defined(_MSC_VER)
+    unsigned long leadingZero = 0;
+    if (number > 0 && _BitScanReverse(&leadingZero, unumber)) {
+        bitsInByte = leadingZero + 1;
+    }
+#endif
+
+    std::string ret;
+    unsigned int mask = 1u << (bitsInByte - 1);
     for (size_t i = 0; i < bitsInByte; ++i) {
-        binaryReprStream << (unumber & 1);
-        unumber >>= 1;
+        ret.push_back(((unumber & mask) > 0 ? '1' : '0'));
+        mask >>= 1;
     }
 
-    auto ret = binaryReprStream.str();
-
-    size_t lastNonNullSymbol = ret.find_last_not_of('0');
-    size_t rightBorder = 0;
-    if (lastNonNullSymbol != std::string::npos) {
-        rightBorder = ret.size() - lastNonNullSymbol - 1;
+#if !defined(__GNUC__) && !defined(__GNUG__) && !defined(__clang__) && !defined(_MSC_VER)
+    size_t firstNonNullSymbol = ret.find_first_not_of('0');
+    if (firstNonNullSymbol != std::string::npos) {
+        return ret.substr(firstNonNullSymbol);
     }
-    return std::string(ret.rbegin() + rightBorder, ret.rend());
+#endif
+    return ret;
 }
 
 TEST(BinaryRepresentationTest, NegativeTest) {
