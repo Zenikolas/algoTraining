@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 
 void write(FILE* file, const void* value, size_t size) {
-    const std::string errorPrefix = "Failed to write data: ";
+    static const std::string errorPrefix = "Failed to write data: ";
     if (!file) {
         throw std::runtime_error(errorPrefix + "bad file descriptor");
     }
@@ -36,7 +36,7 @@ void write(FILE* file, std::string_view value) {
 }
 
 void read(FILE* file, void* value, size_t size) {
-    const std::string errorPrefix = "Failed to read data: ";
+    static const std::string errorPrefix = "Failed to read data: ";
     if (!file) {
         throw std::runtime_error(errorPrefix + "bad file descriptor");
     }
